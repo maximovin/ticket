@@ -1,0 +1,15 @@
+{
+  "namespace" : "fabit.ticket.model",
+  "type" : "record",
+  "name" : "TicketAVRO",
+  "fields" : [
+    {"name":"id","type":"long"},
+    {"name":"visitorName","type":"string"},
+    {"name":"visitorBirthday","type":["null","string"]},
+    {"name":"eventName","type":["null","string"]},
+    {"name":"eventDateTime","type":"string"},
+    {"name":"row","type":["null","int"]},
+    {"name":"seat","type":["null","int"]},
+    {"name":"price","type":"double"}
+  ]
+}
