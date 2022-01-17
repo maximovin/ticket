@@ -1,5 +1,5 @@
 s3:
-  url: ${MINIO:http://localhost:9000}
+  url: http://localhost:9000
   accessKey: fabitticket
   secretKey: fabitticket
   bucket: ticket
@@ -20,7 +20,7 @@ spring:
             useNativeEncoding: true
       kafka:
         binder:
-          brokers: ${BROKER:localhost}
+          brokers: localhost
         bindings:
           supplier-out-0:
             producer:

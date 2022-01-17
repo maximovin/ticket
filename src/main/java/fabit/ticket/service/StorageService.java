@@ -2,9 +2,9 @@ package fabit.ticket.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fabit.ticket.config.S3Properties;
 import fabit.ticket.model.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.prefs.Preferences;
@@ -12,10 +12,10 @@ import java.util.prefs.Preferences;
 @Service
 public class StorageService {
 
-    @Value("${s3.bucket}")
-    String bucket;
     String idKey = "idKey";
 
+    @Autowired
+    private S3Properties s3Properties;
     @Autowired
     private AmazonS3 s3;
     @Autowired
@@ -25,21 +25,21 @@ public class StorageService {
         checkBucket();
         try {
             ticket.setId(generateId());
-            s3.putObject(bucket, ticket.getId().toString(), objectMapper.writeValueAsString(ticket));
+            s3.putObject(s3Properties.getBucket(), ticket.getId().toString(), objectMapper.writeValueAsString(ticket));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
     private void checkBucket() {
-        if (!s3.doesBucketExist(bucket)) {
-            s3.createBucket(bucket);
+        if (!s3.doesBucketExist(s3Properties.getBucket())) {
+            s3.createBucket(s3Properties.getBucket());
         }
     }
 
     public Ticket read(Long id) {
         try {
-            return objectMapper.readValue(s3.getObjectAsString(bucket, id.toString()), Ticket.class);
+            return objectMapper.readValue(s3.getObjectAsString(s3Properties.getBucket(), id.toString()), Ticket.class);
         } catch (Exception e) {
 
         }
