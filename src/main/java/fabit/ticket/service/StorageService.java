@@ -12,7 +12,7 @@ import java.util.prefs.Preferences;
 @Service
 public class StorageService {
 
-    String idKey = "idKey";
+    private String idKey = "idKey";
 
     @Autowired
     private S3Properties s3Properties;
@@ -32,23 +32,25 @@ public class StorageService {
     }
 
     private void checkBucket() {
-        if (!s3.doesBucketExist(s3Properties.getBucket())) {
+        if (!s3.doesBucketExistV2(s3Properties.getBucket())) {
             s3.createBucket(s3Properties.getBucket());
         }
     }
 
     public Ticket read(Long id) {
         try {
-            return objectMapper.readValue(s3.getObjectAsString(s3Properties.getBucket(), id.toString()), Ticket.class);
+            if (s3.doesObjectExist(s3Properties.getBucket(), id.toString())) {
+                return objectMapper.readValue(s3.getObjectAsString(s3Properties.getBucket(), id.toString()), Ticket.class);
+            }
         } catch (Exception e) {
-
+            throw new RuntimeException(e.getMessage());
         }
         return null;
     }
 
     private Long generateId() {
         Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-        Long result = prefs.getLong(idKey, 0);
+        long result = prefs.getLong(idKey, 0);
         result++;
         prefs.putLong(idKey, result);
         return result;
